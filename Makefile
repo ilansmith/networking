@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-Wall -Werror -m64
-APP=  ### FILL IN ### 
-OBJS=  ### FILL IN ### 
+APP=showip
+OBJS=showip.o
 
 ifeq ($(CONFIG_DEBUG),y)
     CFLAGS+=-g -O0
@@ -17,7 +17,7 @@ endif
 all: $(APP)
 
 $(APP): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS)
+	$(CC) -o $@ $^
 
 clean:
 	@echo "removing object files"
