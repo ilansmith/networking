@@ -1,7 +1,8 @@
 CC=gcc
 CFLAGS=-Wall -Werror -m64
-APP=  ### FILL IN ### 
-OBJS=  ### FILL IN ### 
+APPS=server client
+OBJS_SERVER=server.o
+OBJS_CLIENT=client.o
 
 ifeq ($(CONFIG_DEBUG),y)
     CFLAGS+=-g -O0
@@ -14,10 +15,10 @@ endif
 
 .PHONY: all clean cleanall
 
-all: $(APP)
+all: $(APPS)
 
-$(APP): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS)
+$(APP): $(OBJS_`echo $@ | tr a-z A-Z`)
+	$(CC) -o $@ $^
 
 clean:
 	@echo "removing object files"

@@ -1,4 +1,6 @@
 *.o
+client
+server
 tags
 # FILL IN: <app-name>
 
