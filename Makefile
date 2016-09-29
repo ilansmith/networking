@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Werror -m64
+CFLAGS=-Wall -Werror -m64 -ansi -pedantic-errors
 APPS=server client
 OBJS_SERVER=server.o
 OBJS_CLIENT=client.o

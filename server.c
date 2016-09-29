@@ -1,3 +1,6 @@
+#define _POSIX_SOURCE
+#pragma GCC diagnostic ignored "-Wunused-variable"
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +10,14 @@
 #include <netdb.h>
 
 #define BUF_SIZE 500
+
+#ifndef NI_MAXHOST
+#define NI_MAXHOST 1025
+#endif
+
+#ifndef NI_MAXSERV
+#define NI_MAXSERV 1025
+#endif
 
 int
 main(int argc, char *argv[])
@@ -66,13 +77,13 @@ main(int argc, char *argv[])
     /* Read datagrams and echo them back to sender */
 
     for (;;) {
+        char host[NI_MAXHOST], service[NI_MAXSERV];
+
         peer_addr_len = sizeof(struct sockaddr_storage);
         nread = recvfrom(sfd, buf, BUF_SIZE, 0,
                 (struct sockaddr *) &peer_addr, &peer_addr_len);
         if (nread == -1)
             continue;               /* Ignore failed request */
-
-        char host[NI_MAXHOST], service[NI_MAXSERV];
 
         s = getnameinfo((struct sockaddr *) &peer_addr,
                         peer_addr_len, host, NI_MAXHOST,
