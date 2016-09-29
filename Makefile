@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Werror -m64
+CFLAGS=-Wall -Werror -m64 -ansi -pedantic-errors
 APP=showip
 OBJS=showip.o
 
