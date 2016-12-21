@@ -5,6 +5,19 @@
 #include <stdio.h>
 #include <string.h>
 
+#define DO_PARENT_FIRST 1 /* toggle this to allocate resources by parent/child */
+
+#define DO_PARENT() do { \
+	if (!is_child && (sck_parent = do_parent()) == -1) \
+		return -1; \
+} while (0)
+
+#define DO_CHILD() do { \
+	is_child = 1; \
+	if (is_child && (sck_child = do_child()) == -1) \
+		return -1; \
+} while (0)
+
 static int do_parent(void)
 {
 	int sck;
@@ -33,7 +46,7 @@ static int do_child(void)
 
 	if ((sck = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
 		printf("Error (child): socket(), %s, exiting\n",
-				strerror(errno));
+			strerror(errno));
 		return -1;
 	}
 	printf("Child opened socket %d\n", sck);
@@ -45,15 +58,16 @@ int main(int argc, char **argv)
 {
 	int sck_parent = -1, sck_child = -1, is_child = 0;
 
-	if (!is_child && (sck_parent = do_parent()) == -1)
-		return -1;
+#if DO_PARENT_FIRST
+	DO_PARENT();
+#endif
 
-	if (!(fork())) {
-		is_child = 1;
+	if (!(fork()))
+		DO_CHILD();
 
-		if (is_child && (sck_child = do_child()) == -1)
-			return -1;
-	}
+#if !DO_PARENT_FIRST
+	DO_PARENT();
+#endif
 
 	if (sck_child != -1) {
 		printf("Child closing socket %d\n", sck_child);
@@ -65,6 +79,7 @@ int main(int argc, char **argv)
 			sck_parent);
 		close(sck_parent);
 	}
+
 	return 0;
 }
 
