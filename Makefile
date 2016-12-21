@@ -1,7 +1,8 @@
 CC=gcc
 CFLAGS=-Wall -Werror -m64
-APP=  ### FILL IN ### 
-OBJS=  ### FILL IN ### 
+APP=my_fork
+
+OBJS=fork_scenario.o
 
 ifeq ($(CONFIG_DEBUG),y)
     CFLAGS+=-g -O0
