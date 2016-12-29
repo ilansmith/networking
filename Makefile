@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-Wall -Werror -m64
-APP=  ### FILL IN ### 
-OBJS=  ### FILL IN ### 
+APP=clone
+OBJS=clone.c
 
 ifeq ($(CONFIG_DEBUG),y)
     CFLAGS+=-g -O0
