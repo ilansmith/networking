@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
 	if (waitpid(pid, NULL, 0) == -1) /* Wait for child */
 		err_exit("waitpid");
 	printf("child has terminated\n");
+	free(stack);
 
 	exit(EXIT_SUCCESS);
 }
