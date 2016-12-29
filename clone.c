@@ -7,41 +7,39 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+#define err_exit(msg) do { \
+	perror(msg); \
+	exit(EXIT_FAILURE); \
 } while (0)
 
-static int              /* Start function for cloned child */
-childFunc(void *arg)
+#define STACK_SIZE (1024 * 1024) /* Stack size for cloned child */
+
+/* Start function for cloned child */
+static int child_func(void *arg)
 {
 	struct utsname uts;
 
 	/* Change hostname in UTS namespace of child */
-
 	if (sethostname(arg, strlen(arg)) == -1)
-		errExit("sethostname");
+		err_exit("sethostname");
 
 	/* Retrieve and display hostname */
-
 	if (uname(&uts) == -1)
-		errExit("uname");
-	printf("uts.nodename in child:  %s\n", uts.nodename);
+		err_exit("uname");
+	printf("uts.nodename in child: %s\n", uts.nodename);
 
 	/* Keep the namespace open for a while, by sleeping.
 	   This allows some experimentation--for example, another
 	   process might join the namespace. */
-
 	sleep(200);
 
-	return 0;           /* Child terminates now */
+	return 0; /* Child terminates now */
 }
 
-#define STACK_SIZE (1024 * 1024)    /* Stack size for cloned child */
-
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	char *stack;                    /* Start of stack buffer */
-	char *stackTop;                 /* End of stack buffer */
+	char *stack; /* Start of stack buffer */
+	char *stack_top; /* End of stack buffer */
 	pid_t pid;
 	struct utsname uts;
 
@@ -51,33 +49,29 @@ main(int argc, char *argv[])
 	}
 
 	/* Allocate stack for child */
-
 	stack = malloc(STACK_SIZE);
 	if (stack == NULL)
-		errExit("malloc");
-	stackTop = stack + STACK_SIZE;  /* Assume stack grows downward */
+		err_exit("malloc");
+	stack_top = stack + STACK_SIZE; /* Assume stack grows downward */
 
 	/* Create child that has its own UTS namespace;
-	   child commences execution in childFunc() */
-
-	pid = clone(childFunc, stackTop, CLONE_NEWUTS | SIGCHLD, argv[1]);
+	   child commences execution in child_func() */
+	pid = clone(child_func, stack_top, CLONE_NEWUTS | SIGCHLD, argv[1]);
 	if (pid == -1)
-		errExit("clone");
+		err_exit("clone");
 	printf("clone() returned %ld\n", (long) pid);
 
 	/* Parent falls through to here */
-
-	sleep(1);           /* Give child time to change its hostname */
+	sleep(1); /* Give child time to change its hostname */
 
 	/* Display hostname in parent's UTS namespace. This will be
 	   different from hostname in child's UTS namespace. */
-
 	if (uname(&uts) == -1)
-		errExit("uname");
+		err_exit("uname");
 	printf("uts.nodename in parent: %s\n", uts.nodename);
 
-	if (waitpid(pid, NULL, 0) == -1)    /* Wait for child */
-		errExit("waitpid");
+	if (waitpid(pid, NULL, 0) == -1) /* Wait for child */
+		err_exit("waitpid");
 	printf("child has terminated\n");
 
 	exit(EXIT_SUCCESS);
