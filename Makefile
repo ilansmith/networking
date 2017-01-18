@@ -1,7 +1,8 @@
 CC=gcc
 CFLAGS=-Wall -Werror -m64
-APP=  ### FILL IN ### 
-OBJS=  ### FILL IN ### 
+LDFLAGS=-pthread
+APP=futex
+OBJS=futex.o
 
 ifeq ($(CONFIG_DEBUG),y)
     CFLAGS+=-g -O0
