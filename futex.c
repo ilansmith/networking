@@ -25,7 +25,6 @@ static void *threadfn1a(void *p)
     futex(&m1, FUTEX_WAIT, m1, NULL, NULL, 0);
     printf("%s after lock\n", __FUNCTION__);
     sleep(2);
- 
     return NULL;
 }
  
@@ -60,7 +59,6 @@ static void *threadfn2a(void *p)
     printf("%s before lock\n", __FUNCTION__);
     futex(&m1, FUTEX_WAIT, m1, NULL, NULL, 0);
     printf("%s after lock\n", __FUNCTION__);
-    sleep(2);
  
     return NULL;
 }
@@ -69,7 +67,7 @@ static void *threadfn2b(void *p)
 {
     sleep(2);
     printf("%s before lock\n", __FUNCTION__);
-    futex(&m1, FUTEX_WAKE, 1, NULL, NULL, 0);
+    futex(&m1, FUTEX_WAKE, 2, NULL, NULL, 0);
     printf("%s after lock\n", __FUNCTION__);
     return NULL;
 }
@@ -137,18 +135,24 @@ static void example3(void)
 int main(int argc, char **argv)
 {
 	int i;
-	void (*examples[])(void) = {
-		example1,
-		example2,
-		example3
+	struct {
+		void (*func)(void);
+		int enabled;
+	} examples[] = {
+		{ example1, 1 },
+		{ example2, 1 },
+		{ example3, 1 },
 	};
 
 	for (i = 0; i < ARRAY_SZ(examples); i++) {
+		if (!examples[i].enabled)
+			continue;
+
 		m1 = 1;
 		m2 = 1;
 
 		printf("start example%d\n", i + 1);
-		examples[i]();
+		examples[i].func();
 		printf("end example%d\n\n", i + 1);
 	}
 	return 0;
