@@ -25,7 +25,7 @@ static inline type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, \
 }
  
 _syscall6(int, futex, void *, addr1, int, op, int, val1, struct timespec*,
-	timeout, void*, addr2, int, val2)
+	timeout, void*, addr2, int, val3)
 
 #endif /* _SYSCALLSMAC_H_ */
 
