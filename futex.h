@@ -14,7 +14,7 @@ do { \
 type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5,type6 arg6) \
 { \
 long __res; \
-__asm__ volatile ("push %%ebp ; movl %%eax,%%ebp ; movl %1,%%eax ; int $0x80 ; pop %%ebp" \
+__asm__ volatile ("push %%bp ; mov %%ax,%%bp ; mov %1,%%ax ; int $0x80 ; pop %%bp" \
     : "=a" (__res) \
     : "i" (__NR_##name),"b" ((long)(arg1)),"c" ((long)(arg2)), \
       "d" ((long)(arg3)),"S" ((long)(arg4)),"D" ((long)(arg5)), \
