@@ -17,6 +17,17 @@ struct futex_routines {
 static int m1;
 static int m2;
  
+static void run_threads(struct futex_routines *funcs, int size)
+{
+	int i;
+
+	for (i = 0; i < size; i++)
+		pthread_create(&funcs[i].p, NULL, funcs[i].routine, NULL);
+
+	for (i = 0; i < size; i++)
+		pthread_join(funcs[i].p, NULL);
+}
+
 /* example 1 */
 
 static void *threadfn1a(void *p)
@@ -39,17 +50,12 @@ static void *threadfn1b(void *p)
  
 static void example1(void)
 {
-	int i;
 	struct futex_routines funcs[] = {
 		{ .routine = threadfn1a },
 		{ .routine = threadfn1b },
 	};
 
-	for (i = 0; i < ARRAY_SZ(funcs); i++)
-		pthread_create(&funcs[i].p, NULL, funcs[i].routine, NULL);
-
-	for (i = 0; i < ARRAY_SZ(funcs); i++)
-		pthread_join(funcs[i].p, NULL);
+	run_threads(funcs, ARRAY_SZ(funcs));
 }
 
 /* example 2 */
@@ -74,17 +80,12 @@ static void *threadfn2b(void *p)
  
 static void example2(void)
 {
-	int i;
 	struct futex_routines funcs[] = {
 		{ .routine = threadfn2a },
 		{ .routine = threadfn2b },
 	};
 
-	for (i = 0; i < ARRAY_SZ(funcs); i++)
-		pthread_create(&funcs[i].p, NULL, funcs[i].routine, NULL);
-
-	for (i = 0; i < ARRAY_SZ(funcs); i++)
-		pthread_join(funcs[i].p, NULL);
+	run_threads(funcs, ARRAY_SZ(funcs));
 }
 
 /* example 3 */
@@ -118,18 +119,13 @@ static void *threadfn3c(void *p)
 
 static void example3(void)
 {
-	int i;
 	struct futex_routines funcs[] = {
 		{ .routine = threadfn3a },
 		{ .routine = threadfn3b },
 		{ .routine = threadfn3c },
 	};
 
-	for (i = 0; i < ARRAY_SZ(funcs); i++)
-		pthread_create(&funcs[i].p, NULL, funcs[i].routine, NULL);
-
-	for (i = 0; i < ARRAY_SZ(funcs); i++)
-		pthread_join(funcs[i].p, NULL);
+	run_threads(funcs, ARRAY_SZ(funcs));
 }
 
 int main(int argc, char **argv)
